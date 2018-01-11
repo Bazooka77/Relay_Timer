@@ -7,53 +7,63 @@ button.direction = Direction.INPUT
 button.pull = Pull.DOWN
  
 relay1 = DigitalInOut(board.D1)
-relay1.direction = Direction.OUTPUT
- 
 relay2 = DigitalInOut(board.D2)
-relay2.direction = Direction.OUTPUT
-
 relay3 = DigitalInOut(board.D3)
-relay3.direction = Direction.OUTPUT
-
 relay4 = DigitalInOut(board.D4)
-relay4.direction = Direction.OUTPUT
+relays = [relay1, relay2, relay3, relay4]    
 
 start_time = 0
 end_time = 0
 duration = 400
 elapsed = 0
+buttonpress = 0
+ticks = time_monotonic()
 timerstarted = False
 
+for r in relays:
+    r.direction = Direction.OUTPUT
+
 def funct1():
+    if buttonpress == 0:
+        butonpress = 1
+        funct2()
+        
+    else:
+        buttonpress = 0
+        print("Started at: ", ticks)
+        print("Stopped at: ", elapsed)
+        print("Duration: ", duration)
+        for r in relays:
+            r.value = False
+        elapsed = 0
+        start_time = 0
+        end_time = 0
+        time.sleep(.5)
+
+def funct2():
             
-    if elapsed = 0
-        start_time = time.monotonic()
+    if elapsed == 0:
+        start_time = ticks
         end_time = start_time + duration
         print("Timer Started At: ", start_time)
-        relay1.value = True
-        relay2.value = True
-        relay3.value = True
-        relay4.value = True
+        for r in relays:
+            r.value = True
         time.sleep(.5)
-        elapsed = time_monotonic() - start_time
+        elapsed = ticks - start_time
                 
-    elif elapsed > 0 < duration
+    elif elapsed > 0 < duration:
         print("Elapsed Time: ", elapsed)
-        relay1.value = True
-        relay2.value = True
-        relay3.value = True
-        relay4.value = True
+        for r in relays:
+            r.value = True
         time.sleep(.5)
-        elapsed = time_monotonic() - start_time
+        elapsed = ticks - start_time
                 
-    elif time_monotonic >= end_time    
-        print("Started at: ", time_monotonic())
+    elif ticks >= end_time:    
+        print("Started at: ", ticks)
         print("Completed at: ", elapsed)
         print("Duration: ", duration)
-        relay1.value = False
-        relay2.value = False
-        relay3.value = False
-        relay4.value = False
+        for r in relays:
+            r.value = False
         elapsed = 0
         start_time = 0
         end_time = 0
@@ -64,13 +74,10 @@ time.sleep(.01)
    
 while True:
     if button.value:
-        print("Timer Stopped at: ", time.monotonic())
-        print("Duration: ", duration)
-        elapsed = 0
-        start_time = 0
-        end_time = 0
-        time.sleep(.5)
-    else
-        timerstarted = True
         funct1()
+        time.sleep(.5)
+        
+    else:
+        print("Elapsed Time: ", elapsed, "/", duration)
+        time.sleep(.5)
     
