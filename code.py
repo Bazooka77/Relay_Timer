@@ -2,82 +2,64 @@ from digitalio import DigitalInOut, Direction, Pull
 import board
 import time
 
+# Set the pushbutton to pin D0 and pull to UP
 button = DigitalInOut(board.D0)
 button.direction = Direction.INPUT
-button.pull = Pull.DOWN
- 
+button.pull = Pull.UP
+
+# Set the relays to pins D1-D4 and the direction to OUTPUT
 relay1 = DigitalInOut(board.D1)
+relay1.direction = Direction.OUTPUT
+
 relay2 = DigitalInOut(board.D2)
+relay2.direction = Direction.OUTPUT
+
 relay3 = DigitalInOut(board.D3)
+relay3.direction = Direction.OUTPUT
+
 relay4 = DigitalInOut(board.D4)
-relays = [relay1, relay2, relay3, relay4]    
+relay4.direction = Direction.OUTPUT
 
-start_time = 0
-end_time = 0
-duration = 400
-elapsed = 0
-buttonpress = 0
-ticks = time_monotonic()
-timerstarted = False
+# Variable for the button to start or stop
+buttonpressed = 0
 
-for r in relays:
-    r.direction = Direction.OUTPUT
 
 def funct1():
-    if buttonpress == 0:
-        butonpress = 1
-        funct2()
-        
-    else:
-        buttonpress = 0
-        print("Started at: ", ticks)
-        print("Stopped at: ", elapsed)
-        print("Duration: ", duration)
-        for r in relays:
-            r.value = False
-        elapsed = 0
-        start_time = 0
-        end_time = 0
-        time.sleep(.5)
+    print("Timer Started")
+    global buttonpressed
+    buttonpressed = 1
+    relay1.value = True
+    relay2.value = True
+    relay3.value = True
+    relay4.value = True
+    time.sleep(.5)
 
 def funct2():
-            
-    if elapsed == 0:
-        start_time = ticks
-        end_time = start_time + duration
-        print("Timer Started At: ", start_time)
-        for r in relays:
-            r.value = True
-        time.sleep(.5)
-        elapsed = ticks - start_time
-                
-    elif elapsed > 0 < duration:
-        print("Elapsed Time: ", elapsed)
-        for r in relays:
-            r.value = True
-        time.sleep(.5)
-        elapsed = ticks - start_time
-                
-    elif ticks >= end_time:    
-        print("Started at: ", ticks)
-        print("Completed at: ", elapsed)
-        print("Duration: ", duration)
-        for r in relays:
-            r.value = False
-        elapsed = 0
-        start_time = 0
-        end_time = 0
-        time.sleep(.5)
-                    
-time.sleep(.01)
+    print("Timer Stopped")
+    global buttonpressed
+    buttonpressed = 0
+    relay1.value = False
+    relay2.value = False
+    relay3.value = False
+    relay4.value = False
+    time.sleep(.5)
 
-   
-while True:
-    if button.value:
-        funct1()
+    
+# While the button has not been pressed if it is pressed goto function1 
+# else wait for press
+while buttonpressed == 0:
+        if button.value is False:
+            funct1()
+        else:
+            print("Waiting for button press")
+            time.sleep(.5)
+            
+# Else button has been pressed if button is pressed goto function2 else 
+# print elapsed time
+while buttonpressed == 1:
+    if button.value is False:
+        funct2()
+    else:
+        print("elapsed time")
         time.sleep(.5)
         
-    else:
-        print("Elapsed Time: ", elapsed, "/", duration)
-        time.sleep(.5)
-    
